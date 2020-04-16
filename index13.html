@@ -4,10 +4,72 @@
 <head>
   <meta charset="UTF-8">
   <title>Test Canvas</title>
+  <style type="text/css">
+    #mycanvas {
+      border: 10px solid #999;
+      background-color: antiquewhite;
+    }
+  </style>
 </head>
 
 <body>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <canvas width="400" height="200" id="mycanvas">
+    Canvasに対応したブラウザを用意してください。
+  </canvas>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(function() {
+      var canvas = document.getElementById('mycanvas');
+      if (!canvas || !canvas.getContext) return false;
+      var ctx = canvas.getContext('2d');
+      // ctx.fillRect(10,10, 50,50); //実行確認できた。 黒いBOXが描画された //ctxの動作確認
+
+      var startX,startY; //最初の座標
+      var x,y; //動かした後の座標
+      var borderWidth = 10; //canvasの横幅分
+      var isDrawing = false;
+
+      $('#mycanvas').mousedown(function(e){
+        isDrawing = true;
+        //マウスボタンを押したときの座標を取得
+        // x - canvasの座標 - ボーダーの幅  これでcanvas内の座標になりますね
+        startX = e.pageX - $(this).offset().left - borderWidth;
+        startY = e.pageY - $(this).offset().top - borderWidth;
+        // alert(e.pageX); //この座標は描画域の全体の座標でした。
+        // alert(startX); // OK
+      })
+      .mousemove(function(e){
+        if(!isDrawing) return;
+        x = e.pageX - $(this).offset().left - borderWidth;
+        y = e.pageY - $(this).offset().top - borderWidth;
+        // alert(e.pageX);
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(x,y);
+        ctx.stroke();
+        startX = x;
+        startY = y;
+      })
+      .mouseup(function() {
+        isDrawing = false;
+      })
+      .mouseleave(function() {
+        isDrawing = false;
+      });
+    });
+  </script>
 </body>
 
 </html>
+
+<!-- //note
+・htmlでcanvasタグにid＝mycanvasを付加
+・styleで#付で、#mycanvas にborderを指定 
+・getElementById('mycanvas') は、#いらない。idをまんま指定 まぁわかる
+・$('#mycanvas').mousedown() は、#が必要。   ★★★ちょっとなじまない。JavaScriptのお勉強が必要のようだ★★★
+・.mousedown().mousemove() と連続でメソッドを記述(メソッドチェーン)   ★★★要お勉強★★★
+・というかmousemoveでいいのか？mouseupとかないのかな？
+・あそこでのthisはmycanvasのことなんですね。
+---
+・ctx  は候補が出現しないんですね。
+//note -->
